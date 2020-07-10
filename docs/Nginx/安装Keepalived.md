@@ -1,19 +1,21 @@
-### [安装Keepalived](https://www.cnblogs.com/kingsonfu/p/11392470.html)
+### [安装Keepalived](https://blog.csdn.net/qq_42825214/article/details/105314603)
 
 安装包：https://www.keepalived.org/software/keepalived-2.1.3.tar.gz
 
-在生成makefile文件这一步骤时发生了错误提示：
 
-![image-20200709132909018](D:\myproject\myblogg\MyBlogg\picture\image-20200709132909018.png)
 
-[解决方案](http://www.mamicode.com/info-detail-3055006.html)
+[先看这个博客](https://www.cnblogs.com/kingsonfu/p/11392470.html)
 
 [后来又看这个博客](https://www.cnblogs.com/panwenbin-logs/p/11692761.html)
 
-## 1.5 启动keepalived
+[这个博客可以启动起来](https://blog.csdn.net/qq_42825214/article/details/105314603)
 
-启用keepalived服务，启动keepalived服务：
+修改配置：/etc/keepalived/keepalived.conf
 
-systemctl enable keepalived
+启动、关闭、重启、查看状态 
 
-systemctl start keepalived
+service keepalived start|stop|restart|status
+
+你可以使用 ps -ef|grep keepalived 来看它是否真的已经启动了，用 service keepalived status可能看不出来
+
+最后那篇博客救了我的命。
