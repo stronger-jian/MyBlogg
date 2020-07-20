@@ -169,3 +169,54 @@ View ViewModel Model 模式，省去了对dom的操作，大量减少前端代�
        })
    </script>
    ```
+
+#### 简单的组件传值
+
+```vue
+<div id="app">
+    <input type="text" v-model="inputValue">
+    <button v-on:click="handleBtnClick">提交</button>
+    <ul>
+        <todo-item  :content="item" 
+                    :index="index"
+                    v-for="(item, index) in list"
+                    @delete="handleItemDelete">
+        </todo-item>
+    </ul>
+</div>
+```
+```vue
+<script >
+    // 局部组件
+    var TodoItem = {
+        //接受父组件传值
+        props: ['content', 'index'],
+        template: "<li @click='handleItemClick'>{{content}}</li>",
+        methods: {
+            handleItemClick: function() {
+                //emit(发出，射出)向外触发事件
+                this.$emit("delete", this.index)
+            }
+        }
+    }
+    var app = new Vue({
+        el: '#app',
+        components: {
+            TodoItem: TodoItem
+        },
+        data: {
+            list: [],
+            inputValue:''
+        },
+        methods:{
+            handleBtnClick: function() {
+                this.list.push(this.inputValue)
+                this.inputValue = ''
+            },
+            handleItemDelete: function(index) {
+                this.list.splice(index,1)
+            }
+        }
+    })
+</script>
+```
