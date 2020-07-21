@@ -1,4 +1,4 @@
-[Vue2.5-2.6-3.0 开发去哪儿网App 从零基础入门到实战项目开发](https://coding.imooc.com/lesson/203.html#mid=12981)
+[vueVue2.5-2.6-3.0 开发去哪儿网App 从零基础入门到实战项目开发](https://coding.imooc.com/lesson/203.html#mid=12981)
 
 ### Vue基础
 
@@ -216,6 +216,257 @@ View ViewModel Model 模式，省去了对dom的操作，大量减少前端代�
             handleItemDelete: function(index) {
                 this.list.splice(index,1)
             }
+        }
+    })
+</script>
+```
+### 基础精讲
+
+#### 生命周期钩子
+
+这个建议慢慢理解
+
+#### Vue的模板语法
+
+```vue
+<div id="app">
+    <div>{{name + ' Li'}}</div>
+    <div v-text="name + ' Li'"></div>
+    <div v-html="name + ' Li'"></div>
+</div>
+```
+```vue
+<script >
+    var vm = new Vue({
+        el: "#app",
+        data: {
+            name: "Dell"
+        }
+    })
+</script>
+```
+{{变量名}}这是差值表达式等同于v-text
+
+#### 计算属性，方法，侦听器
+
+```vue
+<div id="app">
+   {{fullName}}
+   {{age}}
+</div>
+```
+使用计算属性：
+
+```vue
+<script >
+    var vm = new Vue({
+        el: "#app",
+        data: {
+            firstName: "hello",
+            lastName: "world",
+            age: 28
+        },
+        // 计算属性
+        computed: {
+            fullName: function(){
+                console.log("计算了一次");
+                return this.firstName + " " + this.lastName
+            }
+        }
+    })
+</script>
+```
+使用方法：
+
+{{fullName()}}
+
+```vue
+<script >
+    var vm = new Vue({
+        el: "#app",
+        data: {
+            firstName: "hello",
+            lastName: "world",
+            age: 28
+        },
+        methods: {
+            fullName: function() {
+                console.log("计算了一次");
+                return this.firstName + " " + this.lastName
+            }
+        }
+    })
+</script>
+```
+使用侦听器：
+
+```vue
+<script >
+    var vm = new Vue({
+        el: "#app",
+        data: {
+            firstName: "hello",
+            lastName: "world",
+            fullName: "hello world",
+            age: 28
+        },
+        watch: {
+            firstName: function() {
+                console.log("计算了一次")
+                this.fullName = this.firstName + " " + this.lastName
+            },
+            lastName: function() {
+                console.log("计算了一次")
+                this.fullName = this.firstName + " " + this.lastName
+            }
+        }
+    })
+</script>
+```
+当同一功能，能用计算属性，方法，监听器使用时优先使用计算属性。
+
+#### 计算属的get和set
+
+```vue
+<div id="app">
+   {{fullName}}
+</div>
+```
+```vue
+<script >
+    var vm = new Vue({
+        el: "#app",
+        data: {
+            firstName: "hello",
+            lastName: "world",
+        },
+        computed: {
+            fullName: {
+                get: function() {
+                    return this.firstName + " " + this.lastName
+                },
+                set: function(value) {
+                    var arr = value.split(" ")
+                    this.firstName = arr[0]
+                    this.lastName = arr[1]
+                }
+            }
+        }
+    })
+</script>
+```
+#### Vue的样式绑定
+
+点击字变色:
+
+方法1：
+
+```css
+<style>
+    .activated{
+        color: red
+    }
+</style>
+```
+```vue
+<div id="app">
+    <div @click="handleDivClick"
+         :class="{activated: isActivated}"
+    >
+        hello world
+    </div>
+</div>
+```
+```vue
+<script >
+    var vm = new Vue({
+        el: "#app",
+        data: {
+            isActivated: false
+        },
+        methods: {
+            handleDivClick: function() {
+                this.isActivated = !this.isActivated
+            }
+        }
+    })
+</script>
+```
+方法2：
+
+```vue
+<div id="app">
+    <div @click="handleDivClick"
+         :class="[activated]"
+    >
+        hello world
+    </div>
+</div>
+```
+```vue
+<script >
+    var vm = new Vue({
+        el: "#app",
+        data: {
+            activated: ""
+        },
+        methods: {
+            handleDivClick: function() {
+                this.activated = this.activated === "activated"? "": "activated"
+            }
+        }
+    })
+</script>
+```
+方法3：
+
+```vue
+<div id="app">
+    <div @click="handleDivClick"
+         :style="styleObj"
+    >
+        hello world
+    </div>
+</div>
+```
+```vue
+<script >
+    var vm = new Vue({
+        el: "#app",
+        data: {
+            styleObj: {
+                color: "black"
+            }
+        },
+        methods: {
+            handleDivClick: function() {
+                this.styleObj.color = this.styleObj.color === "black"? "red": "black"
+            }
+        }
+    })
+</script>
+```
+#### Vue中的条件渲染
+
+```vue
+<div id="app">
+    <div v-if="show" >
+        用户名：<input key="username">
+    </div>
+    <div v-else >
+        邮箱：<input key="email">
+    </div>
+</div>
+```
+key值会防止Vue对相同dom的复用。
+
+```vue
+<script >
+    var vm = new Vue({
+        el: "#app",
+        data: {
+            show: false,
+            message: "hello wolrd"
         }
     })
 </script>
