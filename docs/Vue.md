@@ -471,3 +471,87 @@ key值会防止Vue对相同dom的复用。
     })
 </script>
 ```
+#### Vuex:状态管理模式
+
+应用场景：
+
+1. 多个视图依赖于同一状态
+2. 来自不同视图的行为需要改变同一状态
+
+组成介绍：
+
+* State：数据仓库
+
+* getter：用来获取数据
+* Mutation：用来修改数据的
+* Action：用来提交mutation
+
+[vue调试工具vue-devtools的安装及使用](https://www.cnblogs.com/yuqing6/p/7440549.html)我是没能成功我服，下载下来目录和教程不一样，所以我想别的方法了。
+
+安装Vuex
+
+* 安装包：npm install vuex
+* 创建vuex实例：new Vuex.Store()
+* main.js中将 vuex实例挂载到vue对象上
+
+实现count++
+
+基本demo：
+
+* state中创建count字段
+
+  main.js中
+
+  `import Vuex from 'vuex'`
+
+  `Vue.use(Vuex)
+  const store = new Vuex.Store({
+    state: {
+      count: 0
+    }
+  })`
+
+* mutation中创建一个count++的mutation
+
+  `const store = new Vuex.Store({
+    state: {
+      count: 0
+    },
+    mutations: {
+      countIncrease (state) {
+        state.count++
+      }
+    }
+  })`
+
+* button新增click事件触发mutation改变count
+
+  <template>
+    <div id="app">
+      <router-view/>
+      <h1>count:{{count}}</h1>
+      <button @click='countIncrease'>点我自增</button>
+    </div>
+  </template>
+
+  <script>
+  export default {
+    name: 'App',
+    computed: {
+      count () {
+        return this.$store.state.count
+      }
+    },
+    methods: {
+      countIncrease () {
+        this.$store.commit('countIncrease')
+      }
+    }
+  }
+  </script>
+
+### vuex小案例
+
+* 通过state.userInfo控制用户登录路由限制
+* 多组间共享state.userStatus和state.vipLevel状态
+* 多组件修改state.userStatus和state.vipLevel
