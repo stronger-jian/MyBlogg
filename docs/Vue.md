@@ -553,5 +553,203 @@ key值会防止Vue对相同dom的复用。
 ### vuex小案例
 
 * 通过state.userInfo控制用户登录路由限制
+
+  main.js
+
+  `import store from './store'
+  import Vuex from 'vuex'`
+
+  Vue.use(Vuex)
+
+  `Vue.prototype.$store = store
+  `
+
+  `router.beforeEach((to, from, next) => {// 登陆权限 防止没有登录 通过改路径直接进入其他页面
+    console.log(store.state, 'store.state')
+    if (store.state.userInfo || to.path === '/login') {
+      next()
+    } else {
+      next({
+        path: '/login'
+      })
+    }
+    next()
+  })`
+
+  router/index.js
+
+  `import Vue from 'vue'
+  import Router from 'vue-router'
+  import Home from '@/pages/home/Home'
+  import List from '@/pages/list/List'
+  import UserCenter from '@/pages/userCenter/UserCenter'`
+
+  Vue.use(Router)
+
+  `const router = new Router({
+    mode: 'history',// 可以去掉路径上的 #号
+    routes: [
+      {
+        path: '/login',
+        name: 'Home',
+        component: Home
+      },
+      {
+        path: '/list',
+        name: 'List',
+        component: List
+      },
+      {
+        path: '/userCenter',
+        name: 'UserCenter',
+        component: UserCenter
+      }
+    ]
+  })
+  export default router`
+
+  store目录下
+
+  index.js 我们组装模块并导出 store 的地方
+
+  `import Vue from 'vue'
+  import Vuex from 'vuex'
+  import state from './state'
+  import mutations from './mutations'
+  import getters from './getters'`
+
+  Vue.use(Vuex)
+
+  const store = new Vuex.Store({
+    state,
+    getters,
+    mutations
+  })
+
+  export default store
+
+  state.js 定义共享状态
+
+  `export default {
+    userInfo: '',
+    userStatus: '', // 0 -> 普通 1-> vip 2 -> 高级vip
+    vipLevel: ''
+  }`
+
+  mapState 辅助函数
+
+  ```js
+  // 在单独构建的版本中辅助函数为 Vuex.mapState
+  import { mapState } from 'vuex'
+  computed: mapState([
+    // 映射 this.userInfo 为 store.state.userInfo
+    'userInfo'
+  ])
+  ```
+
+  mutations.js 修改共享状态（更改 Vuex 的 store 中的状态的唯一方法是提交 mutation。）
+
+  `export default{
+    login (state, v) {
+      state.userInfo = v
+    },
+    setMemberInfo (state, v) {
+      state.userStatus = v.userStatus
+      state.vipLevel = v.vipLevel
+    }
+  }`
+
+  getter.js Vuex 允许我们在 store 中定义“getter”（可以认为是 store 的计算属性）。就像计算属性一样，getter 的返回值会根据它的依赖被缓存起来，且只有当它的依赖值发生了改变才会被重新计算。
+
+  `export default {
+    memberInfo (state) {
+      switch (state.userStatus) {
+        case 0:
+          return '普通会员'
+        case 1:
+          return 'vip会员'
+        case 2:
+          return `高级v${state.vipLevel}会员`
+        default:
+          return '普通会员'
+      }
+    }
+  }`
+
+  `mapGetters` 辅助函数仅仅是将 store 中的 getter 映射到局部计算属性：
+
+  ```js
+  import { mapGetters } from 'vuex'
+   computed: {
+    // 使用对象展开运算符将 getter 混入 computed 对象中
+      ...mapGetters([
+        'memberInfo ',
+        // ...
+      ])
+    }
+  ```
+
 * 多组间共享state.userStatus和state.vipLevel状态
+
+  home页面 ---> 点击登录
+
+   ```login () {
+  let that = this
+  setTimeout(() => {
+              store.commit('login', {
+                username: that.userLogin.username,
+                password: that.userLogin.password
+              })
+              store.commit('setMemberInfo', {
+                userStatus: 1,
+                vipLevel: 0
+              })
+            })
+            that.$router.push('/list')
+  
+  }
+   ```
+
+  list页面 
+
+  	<template>
+  	<div>
+  	    <div>你好啊，{{memberInfo}}用户</div>
+  	    <div><router-link to="userCenter">个人中心</router-link></div>
+  	</div>
+  	</template>
+  ```<script>
+  import { mapGetters, mapState } from 'vuex'
+  export default {
+    name: 'List',
+    computed: {
+      ...mapState(['userStatus', 'vipLevel']),
+      ...mapGetters(['memberInfo'])
+    },
+    mounted () {}
+  ```
+
+  点击个人中心
+
+  	<template>
+  	<div>
+  	    <div>个人中心</div>
+  	    <div>用户名：{{userInfo.username}}</div>
+  	    <div>身份：{{memberInfo}}</div>
+  	</div>
+  	</template>
+  ```vue
+  <script>
+  import { mapGetters, mapState } from 'vuex'
+  export default {
+    name: 'UserCenter',
+    computed: {
+      ...mapState(['userInfo']),
+      ...mapGetters(['memberInfo'])
+    }
+  }
+  </script>
+  ```
+
 * 多组件修改state.userStatus和state.vipLevel
+
