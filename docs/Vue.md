@@ -753,3 +753,65 @@ key值会防止Vue对相同dom的复用。
 
 * 多组件修改state.userStatus和state.vipLevel
 
+  stroe/actions.js
+
+  Action 类似于 mutation，不同在于：
+
+  1. Action 提交的是 mutation，而不是直接变更状态
+  2. Action 可以包含任意异步操作,mutation必须同步操作
+
+  `export default {
+    buyVip ({ commit }, e) {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          // 修改本地数据
+          commit('setMemberInfo', {
+            userStatus: e.userStatus,
+            vipLevel: e.vipLevel
+          })
+          resolve('购买成功！')
+        }, 1000)
+      })
+    },
+    getFreeVip ({commit, state}) {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          if (state.userStatus === 0) {
+            commit('setMemberInfo', {
+              userStatus: 1,
+              vipLevel: 0
+            })
+            resolve('分享成功，您已获得一月高级会员')
+          } else {
+            resolve('分享成功')
+          }
+        }, 1000)
+      })
+    }
+  }`
+
+  注册到store/index.js
+
+  import actions from './actions'
+
+  const store = new Vuex.Store({
+    state,
+    getters,
+    actions,
+    mutations
+  })
+
+  调用
+
+  `methods: {
+      buy (e) {
+        store.dispatch('buyVip', e).then(res => {
+          alert(res)
+        })
+      }
+    }`
+
+  `store.dispatch('getFreeVip').then(res => {
+            alert(res)
+          })`
+
