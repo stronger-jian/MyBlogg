@@ -182,11 +182,11 @@ A jian
 2. Java只允许单继承，所有类最终的根类是`Object`；
    
 * Object特殊，它没有父类。
-   
+  
 3. protected 允许子类访问父类的字段和方法；
    
 * 子类不能访问父类的private字段和方法。
-   
+  
 4. 子类的构造方法可以通过`super()`调用父类的构造方法；
    * 一个类有默认的无参构造方法。当你重载构造方法时，这个无参构造方法会无效掉。
    * 程序编译，构建子类时，如果没有用super()指明父类特殊的构造方法，那子类会默认使用父类的无参构造方法，此时若父类有特殊构造方法，没有无参构造方法，就会报错。这也就是为什么我们有事要定义，一个无参的看似无用的构造方法。
@@ -395,3 +395,130 @@ public class Main5 {
 Bob, Alice, Grade
 Hello Bob, Alice, Grade!
 
+### 多线程
+
+#### 创建多线程
+
+方法一：从`Thread`派生一个自定义类，然后覆写`run()`方法：
+
+```java
+class MyThread extends Thread {
+    @Override
+    public void run() {
+        System.out.println("start new thread");
+    }
+}
+public class Main {
+    public static void main(String[] args) {
+        Thread t = new MyThread();
+        t.start(); // 启动新线程
+    }
+}
+```
+
+方法二：创建`Thread`实例时，传入一个`Runnable`实例：
+
+```java
+class MyRunnable implements Runnable {
+    @Override
+    public void run() {
+        System.out.println("start new thread!");
+    }
+}
+public class Main {
+    public static void main(String[] args) {
+        Thread t = new Thread(new MyRunnable());
+        t.start(); // 启动新线程
+    }
+}
+```
+
+用Java8引入的lambda语法进一步简写为：
+
+```java
+public class Main {
+    public static void main(String[] args) {
+        Thread t = new Thread(() -> {
+            System.out.println("start new thread!");
+        });
+        t.start(); // 启动新线程
+    }
+}
+```
+
+* Java用`Thread`对象表示一个线程，通过调用`start()`启动一个新线程；
+* 一个线程对象只能调用一次`start()`方法；
+* 线程的执行代码写在`run()`方法中；
+* 线程调度由操作系统决定，程序本身无法决定调度顺序；
+* `Thread.sleep()`可以把当前线程暂停一段时间。
+
+```java
+public static void main(String[] args) {
+    System.out.println("main start!");
+    Thread t = new Thread(){
+        @Override
+        public void run() {
+            System.out.println("thread run...");
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            System.out.println("thread end...");
+        }
+    };
+    t.start();
+    try {
+        Thread.sleep(20);
+    } catch (InterruptedException e) {
+        e.printStackTrace();
+    }
+    System.out.println("main end!");
+}
+```
+
+#### 线程的状态
+
+```java
+Thread t = new Thread(()->{
+    System.out.println("hello");
+});
+System.out.println("start");
+t.start();
+// 让主线程等待t线程结束,join(long)的重载方法也可以指定一个等待时间，超过等待时间后就不再继续等待
+t.join();
+System.out.println("end");
+```
+
+* Java线程对象`Thread`的状态包括：`New`、`Runnable`、`Blocked`、`Waiting`、`Timed Waiting`和`Terminated`；
+  * New-创建新的线程
+  * Runnable-运行中的线程，正在执行run()方法的java代码
+  * Blocked-运行中的线程，因某些操作而被挂起
+  * Waiting-运行中的线程，因某些操作在等待中
+  * Timed Waiting-运行中的线程，因为执行`sleep()`方法正在计时等待；
+  * Terminated-线程已终止，因为`run()`方法执行完毕。
+
+#### 中断线程
+
+```java
+class MyThread extends Thread {
+    @Override
+    public void run() {
+        int n = 0;
+        while (!interrupted()){
+            n++;
+            System.out.println(n+" hello!");
+        }
+    }
+}
+public class Main2 {
+    public static void main(String[] args) throws InterruptedException {
+        Thread t = new MyThread();
+        t.start();
+        Thread.sleep(1);// 暂停1毫秒
+        t.interrupt();// 中断t线程
+        t.join();// 等待t线程结束
+        System.out.println("end");
+    }
+}
+```

@@ -1,6 +1,7 @@
 * [我是谁](./docs/自我介绍.md)
 * Java
-  * [Java基础](./docs/java基础.md)
+  * [Java基础](./docs/java/java基础.md)
+  * [JavaGuide](./docs/java/javaGuide学习.md)
 * 我的项目
   * [秒杀项目](./docs/秒杀项目.md)
   * [高效编程](./docs/高效编程.md)
