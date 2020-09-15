@@ -8,3 +8,6 @@
   * [Vue](./docs/Vue.md)
 * 部署相关
   * [Nginx](./docs/Nginx双活.md)
+
+* 问题和解决博客地址
+  * [问题和博客](./docs/我的问题和解决博客.md)

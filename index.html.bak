@@ -16,7 +16,7 @@
     window.$docsify = {
       name: '我是阿健',
       repo: 'https://github.com/stronger-jian',
-      maxLevel: 2,//最大支持渲染的标题层级
+      maxLevel: 5,//最大支持渲染的标题层级
       subMaxLevel: 4,
       homepage: 'README.md',
       coverpage: true,

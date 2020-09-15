@@ -395,6 +395,10 @@ public class Main5 {
 Bob, Alice, Grade
 Hello Bob, Alice, Grade!
 
+### 集合
+
+Java的集合类定义在`java.util`包中，支持泛型，主要提供了3种集合类，包括`List`，`Set`和`Map`。
+
 ### 多线程
 
 #### 创建多线程
@@ -522,3 +526,53 @@ public class Main2 {
     }
 }
 ```
+
+对目标线程调用`interrupt()`方法可以请求中断一个线程，目标线程通过检测`isInterrupted()`标志获取自身是否已中断。如果目标线程处于等待状态，该线程会捕获到`InterruptedException`；
+
+目标线程检测到`isInterrupted()`为`true`或者捕获了`InterruptedException`都应该立刻结束自身线程；
+
+```java
+class HelloThread extends Thread {
+    public volatile boolean running = true;// volatile 可变的 易变的
+    @Override
+    public void run() {
+        int n = 0;
+        while (running){
+            n++;
+            System.out.println(n+"  hello");
+        }
+        System.out.println("end");
+    }
+}
+public class Main2 {
+    public static void main(String[] args) throws InterruptedException {
+        HelloThread t = new HelloThread();
+        t.start();
+        Thread.sleep(1);
+        t.running=false;
+    }
+}
+```
+
+通过标志位判断需要正确使用`volatile`关键字；
+
+`volatile`关键字解决了共享变量在线程间的可见性问题。
+
+#### 守护线程
+
+守护线程适用于定时器。
+
+```java
+Thread t = new MyThread();
+t.setDaemon(true);
+t.start();
+```
+
+守护线程是为其他线程服务的线程；
+
+所有非守护线程都执行完毕后，虚拟机退出；
+
+守护线程不能持有需要关闭的资源（如打开文件等，因为守护线程没有机会关闭文件）。
+
+
+
